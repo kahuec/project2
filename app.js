@@ -4,10 +4,11 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const ejs = require("ejs");
 const _ = require("lodash");
+const https = require("https");
 
-const homeStartingContent = "Lacus vel facilisis volutpat est velit egestas dui id ornare. Semper auctor neque vitae tempus quam. Sit amet cursus sit amet dictum sit amet justo. Viverra tellus in hac habitasse. Imperdiet proin fermentum leo vel orci porta. Donec ultrices tincidunt arcu non sodales neque sodales ut. Mattis molestie a iaculis at erat pellentesque adipiscing. Magnis dis parturient montes nascetur ridiculus mus mauris vitae ultricies. Adipiscing elit ut aliquam purus sit amet luctus venenatis lectus. Ultrices vitae auctor eu augue ut lectus arcu bibendum at. Odio euismod lacinia at quis risus sed vulputate odio ut. Cursus mattis molestie a iaculis at erat pellentesque adipiscing.";
-const aboutContent = "Hac habitasse platea dictumst vestibulum rhoncus est pellentesque. Dictumst vestibulum rhoncus est pellentesque elit ullamcorper. Non diam phasellus vestibulum lorem sed. Platea dictumst quisque sagittis purus sit. Egestas sed sed risus pretium quam vulputate dignissim suspendisse. Mauris in aliquam sem fringilla. Semper risus in hendrerit gravida rutrum quisque non tellus orci. Amet massa vitae tortor condimentum lacinia quis vel eros. Enim ut tellus elementum sagittis vitae. Mauris ultrices eros in cursus turpis massa tincidunt dui.";
-const contactContent = "Scelerisque eleifend donec pretium vulputate sapien. Rhoncus urna neque viverra justo nec ultrices. Arcu dui vivamus arcu felis bibendum. Consectetur adipiscing elit duis tristique. Risus viverra adipiscing at in tellus integer feugiat. Sapien nec sagittis aliquam malesuada bibendum arcu vitae. Consequat interdum varius sit amet mattis. Iaculis nunc sed augue lacus. Interdum posuere lorem ipsum dolor sit amet consectetur adipiscing elit. Pulvinar elementum integer enim neque. Ultrices gravida dictum fusce ut placerat orci nulla. Mauris in aliquam sem fringilla ut morbi tincidunt. Tortor posuere ac ut consequat semper viverra nam libero.";
+const homeStartingContent = "This project was a little frustrating, but I learned alot about EJS and routes.";
+const aboutContent = "I need more information on how to add weather results to the same page, I can only get it to open on another html page.";
+const contactContent = "Email me ay kahuec@hawaii.edu for more coding questions!";
 
 const app = express();
 
@@ -65,6 +66,44 @@ app.get("/posts/:postName", function(req, res){
 
 });
 
+// added weather button & code
+ const weatherCity = ["cityInput"];
+
+  app.get("/weather", function(req, res){
+  res.render("weather", {weatherCity: weatherCity});   
+});
+let cityName = ["cityInput]"];
+
+app.post("/weather", function(req, res) {
+ 
+    var cityname = String(req.body.cityInput);
+
+    const units = "imperial";
+        const apiKey = "67f6b382921c1e89b39b20d4f9556f22";
+        const url = "https://api.openweathermap.org/data/2.5/weather?q=" + cityname + "&units=" + units + "&APPID=" + apiKey;
+
+        https.get(url, function(response){
+        console.log(response.statusCode);
+
+        response.on("data", function(data){
+            const weatherData = JSON.parse(data);
+            const temp = weatherData.main.temp;
+            const city = weatherData.name;
+            const humidity = weatherData.main.humidity;
+            const weatherDescription = weatherData.weather[0].description;
+            
+            // displays the output of the results
+            res.write("<h1> The current weather in " + city + " is " + weatherDescription + "<h1>");
+            res.write("<h2>The Temperature is " + temp + " Degrees Fahrenheit and the humidity is " + humidity + "% <h2>");
+
+            res.send();
+
+        });
+
+      });
+
+    });
+        
 app.listen(3000, function() {
   console.log("Server started on port 3000");
 });
